@@ -29,11 +29,11 @@ This code is not reusable. You need to write it again if you need to sort data b
 
 With this tool yot should define extractors  - functions, that map item from your sorted array to some value. This value
 should be comparable using < and > operators. (string, number, DateTime object, etc...)  
-Then you should crete comparator from your extractor functions and combine them using aggregate method
+Then you should create comparator from your extractor functions and combine them using aggregate method
 
 ## Installation
 
-..in progresss
+..in progress
 
 ## Usage
 
@@ -55,6 +55,16 @@ A we write:
 ```
   /**
   
+  use function multipleSorter\createComparator;
+  use function multipleSorter\aggregate;
+  use const \multipleSorter\NULLS_LAST;
+  use const \multipleSorter\NULLS_FIRST;
+  
+  use const \multipleSorter\SORT_ASC;
+  use const \multipleSorter\SORT_DESC;
+  
+  // define extractors
+ 
   $getId = function (Product $p) {
       return $p->getId();
   };
@@ -66,6 +76,8 @@ A we write:
         return $p->getDesc();
     };
     
+  
+  
   function sortProductsOnPage1(array & $products)
   {
     $comparatorByName = createComparator($getName);
@@ -76,7 +88,7 @@ A we write:
     usort($products, $sortAggregate);
   }
   
-  function sortProductsOnPage2(array & $products)
+    function sortProductsOnPage2(array & $products)
     {
       $comparatorByDesc = createComparator($getDesc, NULLS_LAST);
       $comparatorById = createComparator($getId, SORT_DESC);

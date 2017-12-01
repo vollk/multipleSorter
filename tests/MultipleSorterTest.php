@@ -4,7 +4,7 @@
  * Time: 16:34
  */
 
-use function multipleSorter\createSorter;
+use function multipleSorter\createComparator;
 use function multipleSorter\aggregate;
 use const multipleSorter\NULLS_LAST;
 use const multipleSorter\NULLS_FIRST;
@@ -38,12 +38,12 @@ class MultipleSorterTest extends \PHPUnit\Framework\TestCase
 
     public function testWithouFlags()
     {
-        $sorterByName = createSorter($this->getName);
-        $sorterById = createSorter($this->getId);
+        $comparatorByName = createComparator($this->getName);
+        $comparatorById = createComparator($this->getId);
 
-        $sortAggregate = aggregate($sorterByName, $sorterById);
+        $comparatorAggregate = aggregate($comparatorByName, $comparatorById);
 
-        usort($this->data, $sortAggregate);
+        usort($this->data, $comparatorAggregate);
 
         $ids = array_map($this->getId,$this->data);
 
@@ -52,10 +52,10 @@ class MultipleSorterTest extends \PHPUnit\Framework\TestCase
 
     public function testNameDescIdDescNullsLast()
     {
-        $sorterByName = createSorter($this->getName, SORT_DESC, NULLS_LAST);
-        $sorterById = createSorter($this->getId, SORT_DESC);
+        $comparatorByName = createComparator($this->getName, SORT_DESC | NULLS_LAST);
+        $comparatorById = createComparator($this->getId, SORT_DESC);
 
-        $sortAggregate = aggregate($sorterByName, $sorterById);
+        $sortAggregate = aggregate($comparatorByName, $comparatorById);
 
         usort($this->data, $sortAggregate);
 
@@ -64,20 +64,20 @@ class MultipleSorterTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($this->sortedNameDescIdDescNullsLast === $ids);
     }
 
-    public function testOneSorter()
+    public function testOneComparator()
     {
-        $sorterById = createSorter($this->getId);
-        usort($this->data, $sorterById);
+        $comparatorById = createComparator($this->getId);
+        usort($this->data, $comparatorById);
 
         $ids = array_map($this->getId,$this->data);
 
         $this->assertTrue([1,2,3,4,5,6] === $ids);
     }
 
-    public function testOneSorterDesc()
+    public function testOneComparatorDesc()
     {
-        $sorterById = createSorter($this->getId, SORT_DESC);
-        usort($this->data, $sorterById);
+        $comparatorById = createComparator($this->getId, SORT_DESC);
+        usort($this->data, $comparatorById);
 
         $ids = array_map($this->getId,$this->data);
 

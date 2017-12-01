@@ -22,13 +22,13 @@ function partial_left(callable $callback, ...$arguments)
     };
 }
 
-function aggregate(callable ...$sorters){
+function aggregate(callable ...$comparators){
 
-    return function ($obj1, $obj2) use ($sorters)
+    return function ($obj1, $obj2) use ($comparators)
     {
-        foreach ($sorters as $sorter)
+        foreach ($comparators as $comparator)
         {
-            $compare_result = $sorter($obj1, $obj2);
+            $compare_result = $comparator($obj1, $obj2);
 
             if($compare_result === 0)
                 continue;
@@ -39,7 +39,7 @@ function aggregate(callable ...$sorters){
     };
 }
 
-function getSortByExtractor($directionMultiplier)
+function createComparatorByExtractor($directionMultiplier)
 {
     return function (callable $extractor, $obj1, $obj2) use ($directionMultiplier)
     {
@@ -53,29 +53,29 @@ function getSortByExtractor($directionMultiplier)
     };
 }
 
-function createSorter(callable $extractor, $flags = null)
+function createComparator(callable $extractor, $flags = null)
 {
     $nulls_flag = $flags & 0b11;
     $dir_flag = $flags & 0b100;
 
     if(SORT_ASC === $dir_flag)
-        $sortByExtractor = getSortByExtractor(1);
+        $comparatorByExtractor = createComparatorByExtractor(1);
     elseif (SORT_DESC === $dir_flag)
-        $sortByExtractor = getSortByExtractor(-1);
+        $comparatorByExtractor = createComparatorByExtractor(-1);
     else
-        $sortByExtractor = getSortByExtractor(1);
+        $comparatorByExtractor = createComparatorByExtractor(1);
 
     if(NULLS_LAST === $nulls_flag)
-        $sortByExtractor = handleNulls($sortByExtractor, 1);
+        $comparatorByExtractor = handleNulls($comparatorByExtractor, 1);
     elseif (NULLS_FIRST === $nulls_flag)
-        $sortByExtractor = handleNulls($sortByExtractor, -1);
+        $comparatorByExtractor = handleNulls($comparatorByExtractor, -1);
 
-    return partial_left($sortByExtractor, $extractor);
+    return partial_left($comparatorByExtractor, $extractor);
 }
 
-function handleNulls(callable $sortByExtractor, $directionMultiplier)
+function handleNulls(callable $comparatorByExtractor, $directionMultiplier)
 {
-    return function($extractor, $obj1, $obj2) use ($sortByExtractor, $directionMultiplier)
+    return function($extractor, $obj1, $obj2) use ($comparatorByExtractor, $directionMultiplier)
     {
         $is_null1 = is_null($extractor($obj1));
         $is_null2 = is_null($extractor($obj2));
@@ -84,6 +84,6 @@ function handleNulls(callable $sortByExtractor, $directionMultiplier)
         elseif(!$is_null1 && $is_null2)
             return -1 * $directionMultiplier;
         else
-            return $sortByExtractor($extractor, $obj1, $obj2);
+            return $comparatorByExtractor($extractor, $obj1, $obj2);
     };
 }

@@ -8,7 +8,7 @@
 require_once '../src/multipleSorter.php';
 require_once 'Product.php';
 
-use function multipleSorter\createSorter;
+use function multipleSorter\createComparator;
 use function multipleSorter\aggregate;
 use const \multipleSorter\NULLS_LAST;
 use const \multipleSorter\NULLS_FIRST;
@@ -24,10 +24,10 @@ $getName = function (Product $p) {
     return $p->getName();
 };
 
-$sorterByName = createSorter($getName, NULLS_LAST | SORT_DESC);
-$sorterById = createSorter($getId, SORT_DESC);
+$comparatorByName = createComparator($getName, NULLS_LAST | SORT_DESC);
+$comparatorById = createComparator($getId, SORT_DESC);
 
-$sortAggregate = aggregate($sorterByName, $sorterById);
+$sortAggregate = aggregate($comparatorByName, $comparatorById);
 
 
 /**
